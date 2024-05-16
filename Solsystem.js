@@ -12,13 +12,13 @@ function setup() {
   let r = random(sun.r+200, canvasWidth/2) //tilfældig startdistance fra solen
   let angle = random(0, 2*PI) //tilfældig vinkel fra solen
   let planetPos = createVector(r*cos(angle), r*sin(angle)) // kartesiske vektor bliver beregent
-  let moonPos = createVector(r*cos(angle) + 17, r*sin(angle)) //månen er ved siden an planeten
+  let moonPos = createVector(r*cos(angle) + 17, r*sin(angle)) //månen bliver placeret 17 pixels ved siden an planeten
 
-  let OrbitEnhedVec = createVector((planetPos.x * cos(90) - planetPos.y * sin(90))/r, (planetPos.x * sin(90) + planetPos.y * cos(90))/r)
-  let OrbitVel = createVector(OrbitEnhedVec.x * sqrt((G*sun.mass)/r ), OrbitEnhedVec.y * sqrt((G*sun.mass)/r))
+  let OrbitEnhedVec = createVector((planetPos.x * cos(90) - planetPos.y * sin(90))/r, (planetPos.x * sin(90) + planetPos.y * cos(90))/r) //Retningen af planetens starthastighedsvektor bliver beregnet, til at være tværvektoren til tyngdekraften
+  let OrbitVel = createVector(OrbitEnhedVec.x * sqrt((G*sun.mass)/r ), OrbitEnhedVec.y * sqrt((G*sun.mass)/r)) //Enhedsvektoren bliver skaleret til tyngdekraften
 
-  planet = new Planet(0.001, planetPos, OrbitVel);
-  moon = new Planet(0.00001, moonPos, createVector(OrbitVel.x, OrbitVel.y + sqrt((G*planet.mass)/30)));
+  planet = new Planet(0.001, planetPos, OrbitVel); 
+  moon = new Planet(0.00001, moonPos, createVector(OrbitVel.x, OrbitVel.y + sqrt((G*planet.mass)/30))); //Månens starthastighed er lig månen, adderet med en starthastighed for at gå i orbit med planeten
   console.log("Enhedsvektor x: " + OrbitEnhedVec.x + " y: " + OrbitEnhedVec.y)
   console.log("OrbitVel x: " + OrbitVel.x + " y: " + OrbitVel.y)
 }
@@ -60,11 +60,11 @@ class Planet {
     let XDistance = this.pos.x-Body2.pos.x
     let YDistance = this.pos.y-Body2.pos.y
     let r = sqrt((XDistance)**2+(YDistance)**2)//afstand mellem objekterne
-    let force = G*((Body2.mass*this.mass)/(r)**2)//kraft mellem objekterne 
-    let enhedsVektor = createVector((XDistance)/r, (YDistance)/r)
-    let gravity = createVector(-(force*enhedsVektor.x), -(force*enhedsVektor.y));
-    let gAcceleration = createVector(gravity.x / this.mass, gravity.y/ this.mass)
-    this.vel.add(gAcceleration) //f=m*a
+    let force = G*((Body2.mass*this.mass)/(r)**2)//kraft mellem objekterne via newtons tyngdekraftslov
+    let enhedsVektor = createVector((XDistance)/r, (YDistance)/r)//Retning af tyngdekraft på objektet til Body2
+    let gravity = createVector(-(force*enhedsVektor.x), -(force*enhedsVektor.y));//Skalering af retningsvektor med tyngdekraft
+    let gAcceleration = createVector(gravity.x / this.mass, gravity.y/ this.mass)//f=m*a <=> a=f/m
+    this.vel.add(gAcceleration) 
   }
   
 }
